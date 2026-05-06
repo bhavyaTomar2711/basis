@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
+/* ============================================
+   Basis — design tokens (see brain.md §3)
+   ============================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* surface */
+  --paper: #f7f4ee;        /* warm cream, NOT pure white */
+  --paper-elev: #ffffff;   /* cards, modals */
+
+  /* ink */
+  --ink: #0e0e0c;          /* primary text, near-black warm */
+  --ink-muted: #5c5a55;    /* secondary text */
+  --ink-faint: #a09c93;    /* captions, footnotes */
+
+  /* structure */
+  --rule: #e5e1d8;         /* hairline borders */
+  --rule-strong: #c9c4b8;  /* emphasis hairlines */
+
+  /* accents */
+  --green: #1f4232;        /* financial green — money, not tech */
+  --green-tint: #edf1ec;   /* savings highlight bg */
+  --alert-tint: #fff1e5;   /* FT salmon for overspend */
+  --alert-ink: #b23a1f;    /* overspend text */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* surfaces */
+  --color-paper: var(--paper);
+  --color-paper-elev: var(--paper-elev);
+
+  /* text */
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+
+  /* structure */
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+
+  /* accents */
+  --color-green: var(--green);
+  --color-green-tint: var(--green-tint);
+  --color-alert-tint: var(--alert-tint);
+  --color-alert-ink: var(--alert-ink);
+
+  /* fonts (mapped from next/font CSS variables in layout.tsx) */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================
+   Base
+   ============================================ */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv01", "cv11";
+}
+
+/* tabular figures everywhere a number lives */
+.font-mono,
+.tnum,
+[class*="font-mono"] {
+  font-feature-settings: "tnum" 1, "ss01" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* selection */
+::selection {
+  background: var(--green);
+  color: var(--paper);
+}
+
+/* focus ring — branded, never default blue */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* hairline rule helper */
+.rule {
+  border-color: var(--rule);
+}
+
+/* paper-card shadow — used only for the hero "audit object" */
+.shadow-paper {
+  box-shadow:
+    0 1px 0 0 rgba(14, 14, 12, 0.04),
+    0 24px 48px -12px rgba(14, 14, 12, 0.12),
+    0 8px 16px -8px rgba(14, 14, 12, 0.08);
 }

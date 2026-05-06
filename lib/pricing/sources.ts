@@ -1,0 +1,70 @@
+import type { SourceCitation } from "./types";
+
+/**
+ * Canonical citation list. Footnotes referenced by `source` fields in pricing
+ * data and `sourceRefs` in audit findings index into this array (1-based).
+ *
+ * Update retrieval dates whenever PRICING_DATA.md is re-verified.
+ */
+export const SOURCES: SourceCitation[] = [
+  {
+    id: 1,
+    vendor: "Cursor",
+    url: "https://cursor.com/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 2,
+    vendor: "GitHub Copilot",
+    url: "https://github.com/features/copilot/plans",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 3,
+    vendor: "Anthropic — Claude (consumer)",
+    url: "https://claude.com/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 4,
+    vendor: "Anthropic — API",
+    url: "https://platform.claude.com/docs/en/about-claude/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 5,
+    vendor: "OpenAI — ChatGPT (consumer)",
+    url: "https://chatgpt.com/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 6,
+    vendor: "OpenAI — API",
+    url: "https://developers.openai.com/api/docs/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 7,
+    vendor: "Google — Gemini (consumer)",
+    url: "https://gemini.google/subscriptions/",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 8,
+    vendor: "Google — Gemini API",
+    url: "https://ai.google.dev/pricing",
+    retrievedOn: "2026-05-07",
+  },
+  {
+    id: 9,
+    vendor: "Windsurf",
+    url: "https://windsurf.com/pricing",
+    retrievedOn: "2026-05-07",
+  },
+];
+
+export function citation(id: number): SourceCitation {
+  const found = SOURCES.find((s) => s.id === id);
+  if (!found) throw new Error(`No citation #${id}`);
+  return found;
+}
