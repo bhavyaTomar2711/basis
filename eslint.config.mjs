@@ -15,6 +15,11 @@ const eslintConfig = defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      // React 19 strictness rules — useful but too noisy on legitimate
+      // hydration patterns (read external storage post-mount, animate via
+      // requestAnimationFrame). Warn, don't block CI.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
     },
   },
   // Override default ignores of eslint-config-next.

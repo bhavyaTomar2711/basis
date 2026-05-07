@@ -1,33 +1,46 @@
 @import "tailwindcss";
 
 /* ============================================
-   Basis — design tokens (see brain.md §3)
+   Basis — design tokens (brain.md §3.2 — visual v2.5, Credex-aligned)
    ============================================ */
 :root {
   /* surface */
-  --paper: #f7f4ee;        /* warm cream, NOT pure white */
-  --paper-elev: #ffffff;   /* cards, modals */
+  --bg: #f5f5f5; /* light gray page bg */
+  --surface: #ffffff; /* white workhorse card */
+  --surface-2: #f4f5f8; /* secondary surface (slightly more contrast for hover/sub-bg) */
+  --grid: rgba(14, 171, 111, 0.14); /* a little stronger green grid line */
+  --grid-dot: rgba(14, 122, 82, 0.42); /* stronger green at major intersections */
 
   /* ink */
-  --ink: #0e0e0c;          /* primary text, near-black warm */
-  --ink-muted: #5c5a55;    /* secondary text */
-  --ink-faint: #a09c93;    /* captions, footnotes */
+  --ink: #0a0a0b; /* near-black */
+  --ink-muted: #5a5a60;
+  --ink-faint: #9a9aa0;
 
   /* structure */
-  --rule: #e5e1d8;         /* hairline borders */
-  --rule-strong: #c9c4b8;  /* emphasis hairlines */
+  --rule: #ececef;
 
-  /* accents */
-  --green: #1f4232;        /* financial green — money, not tech */
-  --green-tint: #edf1ec;   /* savings highlight bg */
-  --alert-tint: #fff1e5;   /* FT salmon for overspend */
-  --alert-ink: #b23a1f;    /* overspend text */
+  /* Credex-aligned green (the accent color) */
+  --green: #0eab6f;
+  --green-deep: #0e7a52;
+  --green-tint: #e6f7ee;
+
+  /* CTA */
+  --cta-bg: #0a0a0b;
+  --cta-ink: #ffffff;
+
+  /* sparing pastels */
+  --mint: #dcefde;
+  --peach: #fde5d3;
+  --sky: #dce8f5;
+  --rose: #f8dce3;
+  --butter: #fdf1ce;
 }
 
 @theme inline {
   /* surfaces */
-  --color-paper: var(--paper);
-  --color-paper-elev: var(--paper-elev);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
 
   /* text */
   --color-ink: var(--ink);
@@ -36,18 +49,29 @@
 
   /* structure */
   --color-rule: var(--rule);
-  --color-rule-strong: var(--rule-strong);
+  --color-grid: var(--grid);
 
   /* accents */
   --color-green: var(--green);
+  --color-green-deep: var(--green-deep);
   --color-green-tint: var(--green-tint);
-  --color-alert-tint: var(--alert-tint);
-  --color-alert-ink: var(--alert-ink);
+
+  /* CTA */
+  --color-cta-bg: var(--cta-bg);
+  --color-cta-ink: var(--cta-ink);
+
+  /* pastels */
+  --color-mint: var(--mint);
+  --color-peach: var(--peach);
+  --color-sky: var(--sky);
+  --color-rose: var(--rose);
+  --color-butter: var(--butter);
 
   /* fonts (mapped from next/font CSS variables in layout.tsx) */
-  --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
+  --font-display: var(--font-inter);
   --font-mono: var(--font-mono);
+  --font-money: var(--font-fraunces);
 }
 
 /* ============================================
@@ -60,16 +84,27 @@ html {
 }
 
 body {
-  background: var(--paper);
+  background-color: var(--bg);
+  /* Grid pattern on <body>:
+     - 80px base grid (slightly tighter than before)
+     - Lines drawn 1.5px wide for stronger presence
+     - No dots — grid lines only for cleaner look */
+  background-image:
+    linear-gradient(to right, var(--grid) 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, var(--grid) 1.5px, transparent 1.5px);
+  background-size:
+    80px 80px,
+    80px 80px;
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv01", "cv11";
+  font-feature-settings: "ss01", "cv11";
 }
 
 /* tabular figures everywhere a number lives */
-.font-mono,
 .tnum,
-[class*="font-mono"] {
+[class*="font-mono"],
+[class*="font-money"] {
   font-feature-settings: "tnum" 1, "ss01" 1;
   font-variant-numeric: tabular-nums;
 }
@@ -77,25 +112,116 @@ body {
 /* selection */
 ::selection {
   background: var(--green);
-  color: var(--paper);
+  color: var(--surface);
 }
 
-/* focus ring — branded, never default blue */
+/* focus ring — branded */
 :focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
-/* hairline rule helper */
-.rule {
-  border-color: var(--rule);
+/* hero soft radial glow — adds depth without screaming "AI gradient" */
+.hero-glow {
+  background: radial-gradient(
+    ellipse 900px 500px at 50% 30%,
+    rgba(14, 171, 111, 0.08),
+    transparent 70%
+  );
 }
 
-/* paper-card shadow — used only for the hero "audit object" */
-.shadow-paper {
+/* ============================================
+   Card surface (the design language — brain.md §3.4a)
+   ============================================ */
+/* On pure white bg, shadows need slightly more weight to still read. */
+.card-shadow {
   box-shadow:
-    0 1px 0 0 rgba(14, 14, 12, 0.04),
-    0 24px 48px -12px rgba(14, 14, 12, 0.12),
-    0 8px 16px -8px rgba(14, 14, 12, 0.08);
+    0 1px 2px rgba(10, 10, 11, 0.05),
+    0 4px 16px -6px rgba(10, 10, 11, 0.08),
+    0 12px 32px -12px rgba(10, 10, 11, 0.10);
+}
+
+.card-shadow-lift {
+  box-shadow:
+    0 1px 3px rgba(10, 10, 11, 0.06),
+    0 8px 24px -10px rgba(10, 10, 11, 0.12),
+    0 24px 56px -16px rgba(10, 10, 11, 0.16);
+}
+
+/* ============================================
+   Floating logo cards — gentle bob + sway
+   Each card sets its own base rotation as a CSS variable (--r)
+   then animates around it. Three duration variants desync the loop.
+   ============================================ */
+@keyframes float-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -10px, 0)
+      rotate(calc(var(--r, 0deg) + 1.5deg));
+  }
+}
+
+.float-card {
+  animation: float-bob 6s ease-in-out infinite;
+  will-change: transform;
+}
+.float-card.delay-1 {
+  animation-duration: 6.8s;
+  animation-delay: -1.2s;
+}
+.float-card.delay-2 {
+  animation-duration: 7.4s;
+  animation-delay: -2.4s;
+}
+.float-card.delay-3 {
+  animation-duration: 5.8s;
+  animation-delay: -0.6s;
+}
+.float-card.delay-4 {
+  animation-duration: 7.1s;
+  animation-delay: -3.1s;
+}
+.float-card.delay-5 {
+  animation-duration: 6.4s;
+  animation-delay: -1.8s;
+}
+
+/* ============================================
+   Marquee — auto-sliding methodology ticker.
+   Cards each carry their own mr-6 so a -50% shift loops seamlessly.
+   ============================================ */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 38s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* respect reduced motion on every transition we ship */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .float-card {
+    transform: rotate(var(--r, 0deg)) !important;
+  }
 }

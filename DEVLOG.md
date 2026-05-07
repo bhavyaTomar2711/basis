@@ -30,3 +30,42 @@
 - Mobile pass at 375px wide.
 
 ---
+
+## Day 2 — 2026-05-08
+**Hours worked:** ~6
+**What I did:**
+- **Major design pivot mid-day.** Started Day 2 expecting to build on the v1 (cream + serif + receipt) aesthetic. User showed me their actual `credex.rocks` page and said "make it clean like this with grid lines." Pivoted to **v2.5: Credex-aligned**. Logged the full reasoning chain in `brain.md` §20 — three decisions log entries trace v1 → v2 → v2.5, including what each pivot supersedes and why. The v2.5 surface: near-white bg, faint CSS grid pattern, Inter 800 hero (not Fraunces serif), Credex green `#0EAB6F`, black-pill CTAs, and a constellation of CSS-rotated floating logo cards as the signature ornament.
+- **Considered three.js + a 3D laptop hero. Rejected.** Two reasons documented in brain.md §20: (a) Lighthouse mobile ≥85 budget is tight and r3f + drei + a GLB model is ~1.5–3 MB, blows LCP, (b) 3D laptop is the most cliché AI-startup move in 2026 — every YC demo-day has one. Adopting it would pull Basis *toward* generic territory. User agreed after seeing the trade-off written out. Depth comes from CSS-rotated cards instead, which Credex itself uses.
+- **Rebuilt `app/globals.css`** with v2.5 tokens: bg `#FAFAFA`, grid color `#E8E8ED`, Credex green `#0EAB6F` + deeper `#0E7A52`. Tailwind v4 `@theme inline` exposes them as `bg-bg`, `text-green-deep`, etc. Added `.bg-grid` + `.bg-grid-mask` utility for the page-wide grid pattern (CSS-only, ~0 cost).
+- **Rebuilt `app/layout.tsx`** — Inter as default workhorse, JetBrains Mono for tabular figures, Fraunces kept variable but only used on the savings figure via the `--font-money` token. Grid pattern lives in a `fixed inset-0 -z-10` div on `<body>` so every route inherits it automatically.
+- **`lib/brand-marks.tsx`** — inline SVG marks for Cursor, OpenAI, Anthropic/Claude, Gemini, GitHub Copilot, Windsurf. All `currentColor`, no asset round-trips, geometry traced by hand for the silhouette feel (not vendor brand kits — nominative use only, monochrome).
+- **Rebuilt `app/page.tsx`** in v2.5 — pill nav, hero with green pill badge above, 2-line bold sans headline (line 1 in green-deep, echoing Credex's "Save Up To 60%" green-then-black pattern), black pill CTA, green-checkmark trust signals, six floating logo cards positioned at hand-tuned `left-/top-/rotate-` coordinates. "How it works" section with three numbered cards (one mint-tinted as the rare pastel-accent moment per restraint rule). "Sample audit" section showing a real-looking mock audit with mint-bg total row. All internal nav uses Next `<Link>`, not `<a>`.
+- **`/audit/new` form** — single page, two sections (A: tools you pay for, repeatable rows with tool select / plan select / spend / seats / remove; B: your team — number input + use-case pill radios). Sticky right rail on desktop with live running monthly total + black submit pill. Mobile collapses to a sticky bottom submit bar. localStorage persistence keyed `basis.audit-form.v1`. Honeypot field for bot trap. Plan auto-suggests spend from pricing data when changed.
+- **`/audit/preview` results page** — reads input from sessionStorage on mount, runs `runAudit` client-side (engine is pure, can run anywhere), renders the full document: doc header with stable hash-derived audit ID + date, savings hero with rAF count-up animation (vanilla JS, respects `prefers-reduced-motion` via global CSS rule), executive-summary card with three template variants by tier (high / medium / optimal), findings list with each row showing tool name + plan + reason + the math (with footnote citations rendered as superscript), savings amount in Fraunces serif, total-saved row in green-tint card, conditional Credex CTA card for `tier === 'high'`, sources footer with full URLs + retrieval dates. No backend yet — Day 3 wires Supabase.
+- **CountUp** — built with vanilla `requestAnimationFrame`, no Framer Motion. ~30 lines, zero dependencies, respects reduced-motion. Saved ~50KB of client JS vs. importing Framer just for one count-up.
+- **Lint config update** — Next 16 ships React 19's strict rules `react-hooks/set-state-in-effect` and `react-hooks/purity`. Both flag legitimate hydration patterns (read external storage post-mount) and rAF animation patterns. Demoted to warnings, not errors. Documented in `eslint.config.mjs`.
+- **Verification:** typecheck clean, lint 0 errors (3 warnings on the deliberate hydration patterns), 14/14 audit-engine tests still pass, `next build` produces 4 static routes (`/`, `/_not-found`, `/audit/new`, `/audit/preview`). All client JS only loads on the routes that need it (form on `/audit/new`, results on `/audit/preview`); the landing page is fully RSC-rendered with zero client JS.
+
+**What I learned:**
+- React 19's `set-state-in-effect` rule is too strict for the legitimate "read external storage at mount" pattern. `useSyncExternalStore` works for cross-tab listeners but localStorage doesn't fire `storage` events for same-tab writes, so it can't be used as the source of truth for an editable form. The simple `useState + useEffect to load + useEffect to write` pattern is correct here; rule demoted.
+- `Math.random()` in render is genuinely a bug — the audit ID changes on every re-render, so footnote anchors break. Replaced with a deterministic djb2-style hash of the input. Same input → same id, every render.
+- Framer Motion would add ~50KB just for one count-up. 30-line vanilla rAF loop does the same job and is easier to reason about under `prefers-reduced-motion`.
+- Tailwind v4's `@theme inline` is great for token → utility mapping. The `bg-grid` + `bg-grid-mask` utilities took 8 lines of CSS, render at 0 cost, and look like the Credex pattern.
+
+**Blockers / what I'm stuck on:**
+- Floating logo cards are positioned with hand-tuned `left-/top-/rotate-` values. Looks great at 1280–1920px. At intermediate widths some cards crowd the headline. Hidden below `lg:` for now. Day 4 polish should test the breakpoint band more thoroughly.
+- Reduced-motion-respecting count-up uses a synchronous setState to "snap" to value on the reduced-motion path. Lint warns. Functionally correct but the rule is right that it's a code smell. Day 4 polish: refactor to use `useRef` + DOM mutation so no setState is needed at all.
+- No backend yet — sessionStorage-based preview means refresh on `/audit/preview` clears the result. Acceptable for Day 2; Day 3 adds Supabase persistence.
+
+**Plan for tomorrow (Day 3):**
+- Supabase project + schema (`audits`, `leads`) + RLS per `brain.md` §8.
+- `/api/audit` server action persisting input + result, returning id + slug.
+- `/audit/[id]` route replaces `/audit/preview` (preview kept as fallback for non-persisted runs).
+- `/a/[slug]` public redacted view.
+- `/api/summary` calling Gemini server-side (PII redacted per §11.4), with the three template variants as graceful fallback.
+- `/api/lead` capturing email, sending Resend transactional email.
+- Upstash rate limiting on all three API routes.
+- `opengraph-image.tsx` generating dynamic OG cards.
+- Conduct user interview if any DM lands a slot.
+
+---

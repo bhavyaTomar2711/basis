@@ -77,62 +77,85 @@ Basis is a free 2-minute audit of your team's AI tool spend. It tells you which 
 ## 3. Visual Identity
 
 ### 3.1 Design philosophy
-**Apple-premium surface, financial-document substance.** Every other AI tool right now looks the same: dark mode, purple gradients, glassmorphism, sparkle ✨ icons, Geist on Geist on Geist. Basis earns trust *because* it doesn't look like AI. The surface is calm, photographic, generously spaced — like Haven or Apple's product pages. The substance — the audit itself — is rendered as a real document with citations, tabular numbers, and footnotes.
+**Credex-aligned, performance-first, card-driven.** Basis is a *Credex product*, so the visual identity intentionally rhymes with credex.rocks: subtle grid-line page background, bold modern sans headline (Inter heavy weights), green as the financial accent, black-pill primary CTAs, and a constellation of small floating "logo cards" — slight rotation, soft shadow — as the signature ornament around the hero. The audit itself lives inside a clean white workhorse card.
 
-The single biggest design move: **the audit document is the hero product**, photographed/rendered the way Apple photographs an iPhone — floating, soft shadow, slight tilt, on a warm cream background.
+**No 3D, no three.js, no animated gradients.** Considered and rejected for two reasons: (a) Lighthouse mobile ≥85 budget is tight and 3D scenes blow LCP, and (b) a 3D laptop hero is the most cliché AI-startup move right now — adopting it pulls Basis *toward* generic-AI-tool territory, away from the Credex-aligned look. Depth comes from CSS-rotated floating cards instead, which Credex itself uses.
+
+**Why this supersedes v2 (multicolor pastel cards):** v2 was right in spirit (card-driven) but pastels muted the financial signal. Credex's own page is dominated by white + green + black, with logo-cards as the ornament. Basis matches.
 
 **Dark mode: deferred.** Light theme only in v1. Tokens are CSS custom properties so dark mode can be added later without refactoring components.
 
 ### 3.2 Color tokens
 
 ```css
-/* light (default) */
---bg:          #F7F4EE;  /* warm cream paper, NOT pure white */
---bg-elev:     #FFFFFF;  /* cards, modals */
---ink:         #0E0E0C;  /* primary text, near-black warm */
---ink-muted:   #5C5A55;  /* secondary text */
---rule:        #E5E1D8;  /* hairlines, borders */
---green:       #1E3A2A;  /* financial accent — money, not tech */
---green-tint:  #EDF1EC;  /* savings highlight background */
---alert-tint:  #FFF1E5;  /* FT-salmon for overspend rows */
---alert-ink:   #B23A1F;  /* overspend text */
---cta-bg:      #0E0E0C;  /* black pill button */
---cta-ink:     #F7F4EE;  /* button text */
+/* surface — near-white page bg with grid lines, white workhorse cards */
+--bg:          #FAFAFA;  /* page background — slightly warm white */
+--surface:     #FFFFFF;  /* white card (the workhorse) */
+--surface-2:   #F5F5F7;  /* secondary surface, subtle differentiation */
+--grid:        #E8E8ED;  /* the faint grid line color (used at ~30% opacity) */
 
-/* dark (optional, ship if time permits) */
---bg-dark:     #0E0E0C;
---ink-dark:    #F7F4EE;
---rule-dark:   #2A2A26;
+/* ink */
+--ink:         #0A0A0B;  /* near-black, neutral */
+--ink-muted:   #5A5A60;  /* secondary text */
+--ink-faint:   #9A9AA0;  /* tertiary, captions */
+
+/* structure */
+--rule:        #ECECEF;  /* hairlines INSIDE cards, never between them */
+
+/* Credex-aligned green — THE accent color */
+--green:       #0EAB6F;  /* primary brand-adjacent green (Credex tone) */
+--green-deep:  #0E7A52;  /* deeper green for high-emphasis savings figures */
+--green-tint:  #E6F7EE;  /* soft mint backdrop for savings highlight cards */
+
+/* CTA — black pill (matches Credex "Start buying credits") */
+--cta-bg:      #0A0A0B;
+--cta-ink:     #FFFFFF;
+
+/* available pastels (use SPARINGLY; default is white + green) */
+--mint:        #DCEFDE;
+--peach:       #FDE5D3;
+--sky:         #DCE8F5;
+--rose:        #F8DCE3;
+--butter:      #FDF1CE;
 ```
 
-**Restraint rule:** never use more than two of these colors in any single viewport, plus the bg. The whitespace is the design.
+**Restraint rule:** the page is white-and-green. Pastels exist for the rare moment that needs punctuation, not for variety's sake. Most viewports use 2 colors plus the bg.
 
 ### 3.3 Typography
 
 | Role | Family | Weight | Use |
 |---|---|---|---|
-| Display | **Fraunces** (variable, free, Google Fonts) | 600–900 | Hero headlines, hero savings number, section titles |
+| Display | **Inter** (variable, free) | 800–900 | Hero headline, section heads — bold, tight tracking, Credex-style |
 | Body | **Inter** (variable, free) | 400, 500 | All UI text, paragraphs, labels |
-| Mono | **JetBrains Mono** (variable, free) | 400, 500 | Tabular figures, audit receipt rows, citations |
+| Mono | **JetBrains Mono** (variable, free) | 400, 500 | Tabular figures, audit rows, citations |
+| **Optional** money serif | **Fraunces** (variable, free) | 600 | The savings *number* only (e.g. `$2,840 / mo`). Gives money authority without competing with the sans headline. |
 
 **Type scale (mobile → desktop):**
-- Hero: 56pt → 96pt (Fraunces 700, line-height 0.95, letter-spacing -0.02em)
-- H1: 40pt → 56pt (Fraunces 700)
-- H2: 28pt → 36pt (Fraunces 600)
+- Hero: 56pt → 88pt (Inter 800, line-height 0.95, letter-spacing −0.025em)
+- H1: 36pt → 52pt (Inter 700)
+- H2: 24pt → 32pt (Inter 700)
 - Body large: 18pt → 20pt (Inter 400, line-height 1.5)
 - Body: 16pt (Inter 400)
-- Caption: 13pt (Inter 500, letter-spacing 0.02em, uppercase for labels)
-- Number / mono: matches surrounding context, with `font-feature-settings: "tnum" 1, "ss01" 1`
+- Caption: 12pt (Inter 500, letter-spacing 0.04em, **UPPERCASE** for labels — "FINDINGS", "SOURCES")
+- Savings number: 48pt → 72pt (Fraunces 600, tabular figures on)
 
-**Numbers always use tabular figures.** This is non-negotiable. A column of dollar amounts must align by digit.
+**Numbers always use tabular figures.** Non-negotiable. A column of dollar amounts must align by digit.
+
+**Why drop Fraunces from the hero?** Credex's actual page uses bold sans headline. Aligning to that. Fraunces survives only on the savings figure, where serif on a money number reads as deliberate authority, not stylistic indulgence.
 
 ### 3.4 Spacing & layout
 - **8pt grid.** All spacing is a multiple of 4px, ideally 8px.
 - **Container widths:** 720px for prose, 960px for the audit, 1200px max for landing sections.
 - **Section vertical padding:** 96px desktop / 48px mobile minimum between major sections.
 - **Generous margins** on the page itself: 24px on mobile, 64px+ on desktop. Never full-bleed text.
-- **Hairline rules** (1px solid var(--rule)) instead of card shadows for separating sections in the audit document.
-- **Card shadow** (only used on the hero "product" object, not on UI cards): `0 24px 48px -12px rgba(14,14,12,0.12), 0 8px 16px -8px rgba(14,14,12,0.08)`.
+
+### 3.4a Card system (the design language)
+- **All major content lives in cards.** Page bg shows through *between* cards, never inside them.
+- **Radius:** `rounded-3xl` (24px) standard, `rounded-[32px]` for hero, `rounded-2xl` (16px) for small chips/badges, `rounded-full` for pills.
+- **Shadow:** `0 1px 3px rgba(29,29,31,0.04), 0 8px 24px -12px rgba(29,29,31,0.08)`. Subtle. Never harsh.
+- **Padding:** 32px standard, 48–56px for hero card, 20px for small.
+- **Hairline borders** (`1px solid var(--rule)`) live INSIDE cards (separating audit rows, sections within a card) — never between cards.
+- **Hover lift on interactive cards:** `translateY(-2px)`, 200ms.
 
 ### 3.5 Motion principles
 **Almost none, deliberately.** AI tools jiggle. Audits don't.
@@ -154,27 +177,42 @@ Forbidden:
 - Tool logos (Cursor, Claude, ChatGPT, etc.): use each vendor's official SVG mark from their press kit. Never default favicons.
 - No sparkle ✨, no robot 🤖, no AI clichés.
 
-### 3.7 Hero product treatment (the signature move)
-The landing-page hero shows the **audit document itself as a beautiful object**. Specifically:
-- A paper card (white, slightly off-white edge) with a torn or dotted-line top edge.
-- Header: "AUDIT REPORT · #A1B2C3 · [date]" in mono.
-- Body: 3–4 itemized rows showing tools, current spend → recommended → savings, with dotted leader lines.
-- Bottom: huge serif "Total saved: $2,840/mo" in green.
-- Floating with soft shadow on the cream background, slight 3° rotation tilt.
-- Implementation options: (a) render in HTML/CSS and screenshot, (b) Figma export to SVG/PNG, (c) build it as live HTML — recommended, zero-asset, scales perfectly, can animate.
+### 3.7 Hero treatment (the Credex-aligned signature move)
+The landing-page hero is composed of three layers:
 
-Build it as live HTML. The hero is then literally a live preview of the product.
+1. **Background:** subtle grid (see §3.8). Always behind everything.
+2. **Centered hero text:** small green pill badge above the headline ("FREE · 2 MIN · NO LOGIN" or similar). Then a 2-line bold sans headline — the second line in `--green-deep` to echo Credex's "Save Up To 60%" green-then-black pattern. Subhead in `--ink-muted`. Primary CTA: black pill ("Run my audit"). Below: a row of green-checkmark trust signals.
+3. **Floating logo cards (the signature ornament):** ~6 small white cards, each `rounded-2xl`, slight rotation between −6° and +6°, the standard shadow, each containing a single AI-tool brand mark (Cursor, OpenAI, Anthropic, Gemini, Copilot, Windsurf). Scattered around the hero — two left, two right, one top-corner, one bottom-corner. Pure CSS positioning + `transform: rotate()`. No 3D, no JS.
 
-### 3.8 OG share image direction
-A torn-page audit certificate, generated dynamically per audit via Next.js `opengraph-image.tsx`:
-- 1200x630 cream background
-- Top: "RECEIPT" wordmark + "AUDIT REPORT" subtitle in mono
-- Center: huge serif savings number ("$2,840/mo saved")
-- Below: tool icons in a row (the user's stack)
-- Bottom: redacted company name (`•••••••`) + date + URL
-- Dotted-line top edge, soft shadow, paper texture
+The user's audit *card* is not in the hero — it lives further down on a "Sample audit" anchor section, so the hero stays focused on the value prop and CTA. When they click "Run my audit," the form takes them to `/audit/new`, and the audit card pattern shows up on the results page — visual continuity from landing → product.
 
-**Why this matters:** the OG image is the viral loop. Most AI tools' OG images are interchangeable dark gradients. Ours will look like a leaked document in a Twitter feed.
+### 3.8 Background grid pattern
+Pure CSS, zero runtime cost, single rule on `<body>` or a fixed-position pseudo-element:
+
+```css
+background-image:
+  linear-gradient(to right, var(--grid) 1px, transparent 1px),
+  linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+background-size: 64px 64px;
+opacity: 0.4; /* faint, never competes with content */
+```
+
+- Lives behind ALL pages (fixed position, `pointer-events: none`).
+- Grid lines fade near the top and bottom edges via a `mask-image: linear-gradient(...)` so the grid doesn't slam into the viewport edges harshly.
+- Optional: a single brighter "active" grid intersection at hero center (a 3×3px green dot) as a deliberate focal anchor — only on the landing page.
+
+This is the Credex visual cue that ties Basis to its parent product. **No JS, no canvas, no SVG patterns**. ~0 bytes added to the page weight.
+
+### 3.9 OG share image direction
+1200×630 generated dynamically per audit via Next.js `opengraph-image.tsx`:
+- White bg with the same faint grid pattern (rendered server-side via `next/og`).
+- Top-left: **Basis** wordmark in Inter 700.
+- Center-left: 1-line headline "Saved $2,840 / month" — savings number in Fraunces 600 green; "Saved" and "/ month" in Inter 700 black.
+- Center-right: a small angled white card with the redacted audit summary ("•••••••, Cursor + ChatGPT + Claude, 5 seats").
+- Bottom: small mono caption "AUDIT · 07 May 2026 · basis.credex.rocks/a/abc123".
+- Twitter card: same image, `summary_large_image`.
+
+**Why this matters:** the OG image is the viral loop. Most AI tools' OG cards are dark gradients with their logo. Ours looks like a leaked screenshot of a real financial dashboard.
 
 ---
 
@@ -655,10 +693,18 @@ Dynamic per slug via `app/a/[slug]/opengraph-image.tsx`. See §3.8 for design.
 ## 14. Accessibility & Performance Budget
 
 ### 14.1 Lighthouse mobile targets (brief requires)
-- Performance ≥ 85
+- Performance ≥ 85 *(stretch goal: ≥ 95 — the user explicitly asked for "good Lighthouse score and a fast website")*
 - Accessibility ≥ 90
 - Best Practices ≥ 90
 - SEO ≥ 90 (not required but free)
+
+**Performance non-negotiables (locked 2026-05-07):**
+- **No three.js, no 3D model loaders, no canvas-based hero animations.** Considered, rejected.
+- **No web fonts beyond Inter + JetBrains Mono + Fraunces** (Fraunces only loaded on routes that actually render the savings figure — likely `/audit/[id]` and `/a/[slug]`).
+- **No client-side libraries on the landing page** other than what RSC + Tailwind ship by default. The grid bg is CSS-only. Floating logo cards are CSS-positioned divs. Hero count-up on results page uses Framer Motion, lazy-loaded with `dynamic({ ssr: false })` and only on the results route.
+- **All AI tool brand marks inlined as SVG** — no PNGs, no remote images, no `next/image` round trips for logos.
+- **`next/font` for self-hosting** all three families with `display: 'swap'` and the variable axis only.
+- **Preconnect** to Supabase (and Resend if used client-side, which it shouldn't be).
 
 ### 14.2 A11y requirements
 - All interactive elements ≥ 44×44px hit target.
@@ -871,6 +917,9 @@ Per §17 honesty rule, write 2 zero-hour entries with real reasons for the days 
 | 2026-05-07 | Abuse protection: Upstash rate limit + honeypot, no CAPTCHA | Friction trade-off; document in DEVLOG |
 | 2026-05-07 | Dark mode deferred to post-submission | Tokens are CSS custom properties so it's a future swap, not a refactor |
 | 2026-05-07 | Deployment owned by user | Claude builds and tests locally; user pushes to Vercel/their host |
+| 2026-05-07 | ~~Visual v1: cream paper + torn-receipt + Fraunces hero~~ → ~~Visual v2: Apple light-gray bg + multicolor white-and-pastel cards~~ → **Visual v2.5: Credex-aligned. Near-white bg + faint grid lines + bold sans hero + green accent + black pills + floating CSS-rotated logo cards.** | User shared the actual credex.rocks page. Visual continuity with the parent brand matters — Basis is a Credex product, so the type, color, and ornament patterns now match Credex's own. Pastel cards from v2 are demoted to "rare punctuation" — default is white + green. |
+| 2026-05-07 | three.js + 3D laptop hero rejected | (a) Lighthouse mobile ≥85 budget, ~1.5–3 MB cost from r3f + drei + GLB. (b) 3D laptop hero is the most cliché AI-startup move in 2026 — adopting it pulls Basis *toward* generic territory, away from the Credex-aligned look. Depth comes from CSS-rotated floating cards instead. User confirmed. |
+| 2026-05-07 | Hero typography: Fraunces serif → Inter 800 sans | Credex's actual page uses a heavy sans headline. Aligning. Fraunces is retained ONLY for the savings figure (where serif-on-money reads as authority, not stylistic indulgence). |
 
 Add new entries as decisions are made. Never delete past entries — strikethrough if reversed.
 
