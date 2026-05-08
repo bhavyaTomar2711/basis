@@ -73,6 +73,7 @@ export function AuditForm() {
   // post-mount. The brief flash is acceptable for a form behind a CTA click.
   const [input, setInput] = useState<AuditInput>(DEFAULT_INPUT);
   const [hydrated, setHydrated] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   useEffect(() => {
     setInput(loadInitial());
     setHydrated(true);
@@ -133,19 +134,35 @@ export function AuditForm() {
     }));
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
     // honeypot — bots fill the hidden field
     const honeypot = (e.currentTarget.elements.namedItem(
       "website",
     ) as HTMLInputElement | null)?.value;
     if (honeypot) return;
     if (input.tools.length === 0) return;
-    window.sessionStorage.setItem(
-      "basis.audit-pending",
-      JSON.stringify(input),
-    );
-    window.location.href = "/audit/preview";
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) throw new Error(`Submit failed: ${res.status}`);
+      const { id } = (await res.json()) as { id: string };
+      window.location.href = `/audit/${id}`;
+    } catch (err) {
+      // Fallback: keep the user moving via the sessionStorage preview path.
+      console.error(err);
+      window.sessionStorage.setItem(
+        "basis.audit-pending",
+        JSON.stringify(input),
+      );
+      window.location.href = "/audit/preview";
+    }
   };
 
   return (
@@ -263,7 +280,7 @@ export function AuditForm() {
 
         {/* mobile-only sticky CTA — pins to the bottom of the viewport */}
         <div className="sticky bottom-4 z-20 lg:hidden">
-          <SubmitBar runningMonthly={runningMonthly} />
+          <SubmitBar runningMonthly={runningMonthly} submitting={submitting} />
         </div>
       </div>
 
@@ -273,6 +290,7 @@ export function AuditForm() {
           <SidebarTotal
             runningMonthly={runningMonthly}
             toolCount={input.tools.length}
+            submitting={submitting}
           />
         </div>
       </aside>
@@ -442,9 +460,11 @@ function ToolRow({
 function SidebarTotal({
   runningMonthly,
   toolCount,
+  submitting,
 }: {
   runningMonthly: number;
   toolCount: number;
+  submitting: boolean;
 }) {
   return (
     <div className="card-shadow rounded-3xl border border-rule bg-surface p-6">
@@ -465,10 +485,10 @@ function SidebarTotal({
 
       <button
         type="submit"
-        className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-cta-bg px-6 text-base font-medium text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c] disabled:opacity-50"
-        disabled={toolCount === 0}
+        className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-cta-bg px-6 text-base font-medium text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c] disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={toolCount === 0 || submitting}
       >
-        Run my audit →
+        {submitting ? "Running…" : "Run my audit →"}
       </button>
 
       <p className="mt-4 text-xs text-ink-faint">
@@ -478,7 +498,13 @@ function SidebarTotal({
   );
 }
 
-function SubmitBar({ runningMonthly }: { runningMonthly: number }) {
+function SubmitBar({
+  runningMonthly,
+  submitting,
+}: {
+  runningMonthly: number;
+  submitting: boolean;
+}) {
   return (
     <div className="card-shadow flex items-center justify-between rounded-3xl border border-rule bg-surface p-5">
       <div>
@@ -492,9 +518,10 @@ function SubmitBar({ runningMonthly }: { runningMonthly: number }) {
       </div>
       <button
         type="submit"
-        className="inline-flex h-11 items-center justify-center rounded-full bg-cta-bg px-5 text-sm font-medium text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c]"
+        className="inline-flex h-11 items-center justify-center rounded-full bg-cta-bg px-5 text-sm font-medium text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c] disabled:cursor-not-allowed disabled:opacity-60"
+        disabled={submitting}
       >
-        Run audit →
+        {submitting ? "Running…" : "Run audit →"}
       </button>
     </div>
   );

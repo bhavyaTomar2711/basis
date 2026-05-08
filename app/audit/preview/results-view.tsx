@@ -70,7 +70,7 @@ export function ResultsView() {
 /* ============================================
    Main results layout
    ============================================ */
-function ResultsContent({ result }: { result: AuditResult }) {
+export function ResultsContent({ result }: { result: AuditResult }) {
   const tier = result.tier;
   const sourcesUsed = useMemo(() => {
     const set = new Set<number>();
