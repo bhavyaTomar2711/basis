@@ -39,9 +39,14 @@ function SiteNav() {
           <img
             src="/logo.png"
             alt="Basis"
+            // Intrinsic 1557×652 → rendered at h-16 (64px). Explicit
+            // dimensions eliminate the LCP element's CLS contribution.
+            width={1557}
+            height={652}
             className="h-16 w-auto"
             loading="eager"
             decoding="sync"
+            fetchPriority="high"
           />
         </Link>
         {/* Middle links — bigger, with subtle background on hover */}
@@ -1153,6 +1158,9 @@ function SiteFooter() {
               <img
                 src="/footer-logo.png"
                 alt="Basis"
+                // Intrinsic 1652×558 → rendered at h-14 (56px).
+                width={1652}
+                height={558}
                 className="h-14 w-auto"
                 loading="lazy"
                 decoding="async"

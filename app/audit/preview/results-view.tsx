@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { runAudit } from "@/lib/audit/engine";
 import { templateSummary } from "@/lib/audit/summary-template";
+import {
+  computeBenchmark,
+  type BenchmarkResult,
+} from "@/lib/audit/benchmarks";
 import type { AuditInput, AuditResult, ToolFinding } from "@/lib/audit/types";
 import { TOOLS } from "@/lib/pricing/data";
 import { citation } from "@/lib/pricing/sources";
@@ -89,11 +93,18 @@ export function ResultsContent({
   publicShare?: boolean;
 }) {
   const tier = result.tier;
+  const benchmark = useMemo<BenchmarkResult | null>(
+    () => computeBenchmark(result.input, result.totalCurrentMonthlyUsd),
+    [result],
+  );
   const sourcesUsed = useMemo(() => {
     const set = new Set<number>();
     for (const f of result.findings) for (const id of f.sourceRefs) set.add(id);
+    // Surface benchmark citations in the Sources list too so the reader can
+    // verify the comparison data, not just the pricing.
+    if (benchmark) for (const id of benchmark.sourceRefs) set.add(id);
     return Array.from(set).sort((a, b) => a - b);
-  }, [result]);
+  }, [result, benchmark]);
   // Display-only audit ID for the doc header. For the preview path (no persisted row)
   // we derive a stable id from the input hash; for the persisted path the prop wins.
   const auditId = useMemo(
@@ -172,6 +183,9 @@ export function ResultsContent({
         persistedAuditId={persistedAuditId}
         initialAiSummary={initialAiSummary}
       />
+
+      {/* benchmark — comparison to peer companies, coding-heavy stacks only */}
+      {benchmark && <BenchmarkBand benchmark={benchmark} />}
 
       {/* findings — receipt rows in a card */}
       <section className="mt-12">
@@ -768,6 +782,143 @@ function LeadCaptureCard({
       </form>
     </section>
   );
+}
+
+/* ============================================
+   Benchmark band — comparison row positioned between exec summary and
+   findings. Coding-heavy stacks only (`computeBenchmark` returns null
+   otherwise, so this component never mounts).
+
+   Layout: header strip with the band label + position chip, then the
+   per-seat figure paired with the cited peer range, then a horizontal
+   scale that visually places the user inside (or outside) the band.
+   ============================================ */
+function BenchmarkBand({ benchmark }: { benchmark: BenchmarkResult }) {
+  const positionLabel =
+    benchmark.position === "below"
+      ? "Below typical"
+      : benchmark.position === "above"
+        ? "Above typical"
+        : "In range";
+  const positionTone =
+    benchmark.position === "above"
+      ? "bg-bg text-ink-muted"
+      : benchmark.position === "below"
+        ? "bg-bg text-ink-muted"
+        : "bg-green-tint text-green-deep";
+
+  // Layout math: position the marker as a 0–100% offset across the
+  // [min, max] axis. Clamp to [0, 100] so an outlier still pins to the edge
+  // rather than overflowing the track.
+  const { band } = benchmark;
+  const range = band.perSeatMaxUsd - band.perSeatMinUsd;
+  const markerPct = clamp(
+    ((benchmark.yourPerSeatMonthlyUsd - band.perSeatMinUsd) / range) * 100,
+    0,
+    100,
+  );
+  const medianPct = clamp(
+    ((band.perSeatMedianUsd - band.perSeatMinUsd) / range) * 100,
+    0,
+    100,
+  );
+
+  const pctVsMedian = Math.round(benchmark.pctVsMedian);
+  const pctVsMedianText =
+    pctVsMedian === 0
+      ? "right at the median"
+      : pctVsMedian > 0
+        ? `${pctVsMedian}% above median`
+        : `${Math.abs(pctVsMedian)}% below median`;
+
+  return (
+    <section className="mt-12">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        Benchmark
+      </p>
+      <div className="card-shadow mt-3 rounded-3xl border border-rule bg-surface p-6 sm:p-8">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h3 className="text-2xl font-bold tracking-tight">
+            {band.label}
+          </h3>
+          <span
+            className={`inline-flex items-center rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] ${positionTone}`}
+          >
+            {positionLabel}
+          </span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+              Your AI spend / seat
+            </p>
+            <p className="mt-1 font-money text-3xl font-semibold tabular-nums text-ink sm:text-4xl">
+              {fmtUsd(benchmark.yourPerSeatMonthlyUsd)}
+              <span className="font-sans text-sm font-medium text-ink-muted">
+                /mo
+              </span>
+            </p>
+          </div>
+
+          <div
+            className="hidden h-10 w-px bg-rule sm:block"
+            aria-hidden="true"
+          />
+
+          <div className="sm:text-right">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
+              Peer range
+              <sup className="ml-0.5 text-ink-faint">
+                {benchmark.sourceRefs.map((id) => `[${id}]`).join("")}
+              </sup>
+            </p>
+            <p className="mt-1 font-mono text-base tabular-nums text-ink-muted sm:text-lg">
+              {fmtUsd(band.perSeatMinUsd)}–{fmtUsd(band.perSeatMaxUsd)}/mo
+            </p>
+            <p className="mt-0.5 font-mono text-xs text-ink-faint">
+              Median {fmtUsd(band.perSeatMedianUsd)}/mo
+            </p>
+          </div>
+        </div>
+
+        {/* Position scale — visual placement of the user vs. the peer band */}
+        <div className="mt-6">
+          <div className="relative h-2 rounded-full bg-bg">
+            {/* in-range band — sits behind the marker */}
+            <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-green-tint" />
+            {/* median tick */}
+            <div
+              className="absolute top-1/2 h-3 w-px -translate-y-1/2 bg-green-deep/40"
+              style={{ left: `${medianPct}%` }}
+              aria-hidden="true"
+            />
+            {/* user marker */}
+            <div
+              className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-green-deep shadow-sm"
+              style={{ left: `${markerPct}%` }}
+              aria-label={`Your per-seat spend: ${fmtUsd(benchmark.yourPerSeatMonthlyUsd)}/mo`}
+            />
+          </div>
+          <div className="mt-2 flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
+            <span>{fmtUsd(band.perSeatMinUsd)}</span>
+            <span>{fmtUsd(band.perSeatMaxUsd)}</span>
+          </div>
+        </div>
+
+        <p className="mt-5 text-pretty text-sm leading-relaxed text-ink-muted">
+          You&rsquo;re <span className="font-medium text-ink">{pctVsMedianText}</span>{" "}
+          for similar-size teams on a coding-heavy stack. Range is sourced
+          from Ramp&rsquo;s 2025 AI spending insights and a16z&rsquo;s 2025
+          enterprise AI report, normalised per-seat. Sources cited below.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, n));
 }
 
 /* ============================================

@@ -63,7 +63,11 @@ function applyConsolidation(
 
 function tierFor(monthlySavings: number): SavingsTier {
   if (monthlySavings >= 500) return "high";
-  if (monthlySavings < 100) return "optimal";
+  // brain.md §9.5 — "optimal" means we genuinely found no meaningful change.
+  // A stack with $20 of savings is not "spending well" — it has a small
+  // overpayment, which the medium-tier copy handles correctly. The cutoff
+  // is $1 (rounded to cents) to absorb floating-point noise from the rules.
+  if (monthlySavings < 1) return "optimal";
   return "medium";
 }
 

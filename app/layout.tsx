@@ -55,6 +55,15 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable}`}
     >
+      <head>
+        {/* Pre-warm the TLS handshake to Supabase — the first DB read on
+            /audit/[id] is on the critical path for that route. */}
+        <link
+          rel="preconnect"
+          href="https://weggevbqnteajhnxdkcu.supabase.co"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="relative min-h-screen overflow-x-clip text-ink">
         {/* Grid lives on <body> via globals.css — see .bg-grid in app/globals.css */}
         {children}

@@ -568,8 +568,8 @@ If the finding can't pass this test, it doesn't ship.
 
 ### 9.5 Tier thresholds
 - `high`: totalMonthlySavingsUsd ≥ 500 → Credex CTA prominent.
-- `medium`: 100 ≤ totalMonthlySavingsUsd < 500 → standard CTA.
-- `optimal`: totalMonthlySavingsUsd < 100 → "you're spending well" CTA + notify-me signup.
+- `medium`: 1 ≤ totalMonthlySavingsUsd < 500 → no CTA card (the findings themselves are the value; we don't want to upsell on $20 of savings).
+- `optimal`: totalMonthlySavingsUsd < 1 → "you're spending well" CTA + notify-me signup. The cutoff is $1 rather than 0 to absorb floating-point noise from per-tool rule arithmetic. Originally was `< 100` — corrected after a $20-savings audit rendered the "no major changes recommended" CTA, which contradicted the "$20 saved/month" hero.
 
 ---
 

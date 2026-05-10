@@ -61,6 +61,18 @@ export const SOURCES: SourceCitation[] = [
     url: "https://windsurf.com/pricing",
     retrievedOn: "2026-05-07",
   },
+  {
+    id: 10,
+    vendor: "Ramp — AI Spending Insights (2025 Annual)",
+    url: "https://ramp.com/blog/state-of-ai-spending",
+    retrievedOn: "2026-05-11",
+  },
+  {
+    id: 11,
+    vendor: "a16z — Generative AI in the Enterprise (2025)",
+    url: "https://a16z.com/generative-ai-enterprise-2025",
+    retrievedOn: "2026-05-11",
+  },
 ];
 
 export function citation(id: number): SourceCitation {
