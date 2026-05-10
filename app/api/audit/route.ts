@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { runAudit } from "@/lib/audit/engine";
 import type { AuditInput } from "@/lib/audit/types";
 import { getSupabaseServer } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const VALID_USE_CASES = new Set([
   "coding",
@@ -66,6 +67,16 @@ export async function POST(request: NextRequest) {
   const { website: _ignored, ...input } = body;
   void _ignored;
 
+  // brain.md §12.4 — 5 audits / hour / ip. Done before running the engine so
+  // a flooder can't burn CPU even if the engine is cheap.
+  const rl = await checkRateLimit("audit", request);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Try again in an hour." },
+      { status: 429 },
+    );
+  }
+
   let result;
   try {
     result = runAudit(input);
@@ -85,6 +96,7 @@ export async function POST(request: NextRequest) {
       total_monthly_savings_usd: result.totalMonthlySavingsUsd,
       total_annual_savings_usd: result.totalAnnualSavingsUsd,
       user_agent: request.headers.get("user-agent"),
+      ip_hash: rl.ipHash,
     })
     .select("id, slug")
     .single();

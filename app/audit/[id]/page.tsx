@@ -25,7 +25,7 @@ export default async function AuditByIdPage({
   const supabase = getSupabaseServer();
   const { data, error } = await supabase
     .from("audits")
-    .select("id, slug, result")
+    .select("id, slug, result, ai_summary")
     .eq("id", id)
     .maybeSingle();
 
@@ -66,7 +66,12 @@ export default async function AuditByIdPage({
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-12 sm:px-6 sm:pt-16">
-        <ResultsContent result={result} />
+        <ResultsContent
+          result={result}
+          persistedAuditId={data.id}
+          initialAiSummary={data.ai_summary}
+          shareSlug={data.slug}
+        />
       </main>
 
       <footer className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
