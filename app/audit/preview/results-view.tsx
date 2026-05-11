@@ -522,14 +522,6 @@ function LoadingState() {
    else optional. Honeypot inline. On submit, posts to /api/lead and swaps
    to a confirmation state.
    ============================================ */
-const ROLE_OPTIONS = [
-  { id: "founder_ceo", label: "Founder / CEO" },
-  { id: "eng_manager", label: "Eng Manager" },
-  { id: "cto_vp", label: "CTO / VP" },
-  { id: "ic", label: "IC" },
-  { id: "other", label: "Other" },
-] as const;
-
 function LeadCaptureCard({
   auditId,
   defaultTeamSize,
@@ -539,7 +531,6 @@ function LeadCaptureCard({
 }) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
-  const [role, setRole] = useState<string>("");
   const [teamSize, setTeamSize] = useState<number>(defaultTeamSize);
   const [status, setStatus] = useState<
     "idle" | "submitting" | "success" | "saved_no_email" | "error"
@@ -571,7 +562,6 @@ function LeadCaptureCard({
           auditId,
           email: email.trim(),
           company: company.trim() || null,
-          role: role || null,
           teamSize: Number.isFinite(teamSize) ? teamSize : null,
         }),
       });
@@ -726,27 +716,6 @@ function LeadCaptureCard({
               onChange={(e) => setCompany(e.target.value)}
               className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
             />
-          </div>
-          <div>
-            <label
-              htmlFor="lead-role"
-              className="mt-5 block text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
-            >
-              Role <span className="font-normal normal-case text-ink-faint">(optional)</span>
-            </label>
-            <select
-              id="lead-role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
-            >
-              <option value="">-</option>
-              {ROLE_OPTIONS.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
           </div>
           <div>
             <label

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TOOLS } from "@/lib/pricing/data";
 import type { ToolId } from "@/lib/pricing/types";
-import type { AuditInput, Role, ToolEntry, UseCase } from "@/lib/audit/types";
+import type { AuditInput, ToolEntry, UseCase } from "@/lib/audit/types";
 import { TOOL_MARKS } from "@/lib/brand-marks";
 
 const STORAGE_KEY = "basis.audit-form.v1";
@@ -11,15 +11,6 @@ const TOOL_IDS: ToolId[] = [
   "cursor", "copilot", "claude", "chatgpt",
   "anthropic_api", "openai_api", "gemini", "windsurf",
 ];
-const ROLES: { value: string; label: string }[] = [
-  { value: "",            label: "— optional —"  },
-  { value: "founder_ceo", label: "Founder / CEO" },
-  { value: "eng_manager", label: "Eng Manager"   },
-  { value: "cto_vp",      label: "CTO / VP"      },
-  { value: "ic",          label: "IC"            },
-  { value: "other",       label: "Other"         },
-];
-
 const USE_CASES: { id: UseCase; label: string }[] = [
   { id: "coding",   label: "Coding"   },
   { id: "writing",  label: "Writing"  },
@@ -385,10 +376,8 @@ export function AuditForm() {
 
           {/* Team size + role + use case */}
           <div className="border-t border-rule px-6 py-6 sm:flex sm:items-start sm:gap-10">
-            {/* Team size + Role stacked */}
-            <div className="flex w-full shrink-0 flex-col gap-5 sm:w-44">
-
-              {/* Team size with +/- stepper */}
+            {/* Team size */}
+            <div className="w-full shrink-0 sm:w-44">
               <div>
                 <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Team size</p>
                 <div className="mt-2.5 flex h-11 w-full items-center overflow-hidden rounded-xl border border-rule bg-surface">
@@ -430,19 +419,6 @@ export function AuditForm() {
                       <path d="M12 5v14M5 12h14" />
                     </svg>
                   </button>
-                </div>
-              </div>
-
-              {/* Role */}
-              <div>
-                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Role <span className="normal-case tracking-normal font-normal text-ink-faint">(optional)</span></p>
-                <div className="mt-2.5">
-                  <Select
-                    value={input.role ?? ""}
-                    onChange={(v) => setInput(s => ({ ...s, role: (v as Role) || undefined }))}
-                    options={ROLES}
-                    aria-label="Role"
-                  />
                 </div>
               </div>
             </div>

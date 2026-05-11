@@ -1,7 +1,6 @@
 import type { ToolId } from "@/lib/pricing/types";
 
 export type UseCase = "coding" | "writing" | "data" | "research" | "mixed";
-export type Role = "founder_ceo" | "eng_manager" | "cto_vp" | "ic" | "other";
 
 export interface ToolEntry {
   tool: ToolId;
@@ -17,7 +16,6 @@ export interface AuditInput {
   tools: ToolEntry[];
   teamSize: number;
   useCase: UseCase;
-  role?: Role;
 }
 
 export type RecommendedAction =
