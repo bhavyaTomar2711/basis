@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TOOLS } from "@/lib/pricing/data";
 import type { ToolId } from "@/lib/pricing/types";
-import type { AuditInput, ToolEntry, UseCase } from "@/lib/audit/types";
+import type { AuditInput, Role, ToolEntry, UseCase } from "@/lib/audit/types";
 import { TOOL_MARKS } from "@/lib/brand-marks";
 
 const STORAGE_KEY = "basis.audit-form.v1";
@@ -11,6 +11,15 @@ const TOOL_IDS: ToolId[] = [
   "cursor", "copilot", "claude", "chatgpt",
   "anthropic_api", "openai_api", "gemini", "windsurf",
 ];
+const ROLES: { value: string; label: string }[] = [
+  { value: "",            label: "— optional —"  },
+  { value: "founder_ceo", label: "Founder / CEO" },
+  { value: "eng_manager", label: "Eng Manager"   },
+  { value: "cto_vp",      label: "CTO / VP"      },
+  { value: "ic",          label: "IC"            },
+  { value: "other",       label: "Other"         },
+];
+
 const USE_CASES: { id: UseCase; label: string }[] = [
   { id: "coding",   label: "Coding"   },
   { id: "writing",  label: "Writing"  },
@@ -133,11 +142,16 @@ export function AuditForm() {
   const [input, setInput] = useState<AuditInput>(DEFAULT_INPUT);
   const [hydrated, setHydrated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [teamSizeStr, setTeamSizeStr] = useState(String(DEFAULT_INPUT.teamSize));
 
-  useEffect(() => { setInput(loadInitial()); setHydrated(true); }, []);
+  useEffect(() => {
+    setInput(loadInitial());
+    setHydrated(true);
+  }, []);
   useEffect(() => {
     if (!hydrated) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(input));
+    setTeamSizeStr(String(input.teamSize));
   }, [input, hydrated]);
 
   const runningMonthly = useMemo(
@@ -369,23 +383,67 @@ export function AuditForm() {
             </div>
           </div>
 
-          {/* Team size + use case */}
+          {/* Team size + role + use case */}
           <div className="border-t border-rule px-6 py-6 sm:flex sm:items-start sm:gap-10">
-            {/* Team size */}
-            <div className="sm:w-44 sm:shrink-0">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Team size</p>
-              <div className="relative mt-2.5">
-                <input
-                  type="number" min={1} max={500} value={input.teamSize}
-                  onChange={(e) => setInput(s => ({ ...s, teamSize: Math.max(1, Number(e.target.value) || 1) }))}
-                  className="h-11 w-full rounded-xl border border-rule bg-surface pl-4 pr-10 font-mono text-[15px] font-medium text-ink outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint">
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </span>
+            {/* Team size + Role stacked */}
+            <div className="flex w-full shrink-0 flex-col gap-5 sm:w-44">
+
+              {/* Team size with +/- stepper */}
+              <div>
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Team size</p>
+                <div className="mt-2.5 flex h-11 w-full items-center overflow-hidden rounded-xl border border-rule bg-surface">
+                  <button
+                    type="button"
+                    onClick={() => setInput(s => ({ ...s, teamSize: Math.max(1, s.teamSize - 1) }))}
+                    className="flex h-full w-11 shrink-0 items-center justify-center text-ink-muted transition hover:bg-surface-2 hover:text-ink active:scale-95"
+                    aria-label="Decrease team size"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M5 12h14" />
+                    </svg>
+                  </button>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={teamSizeStr}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^0-9]/g, "");
+                      setTeamSizeStr(raw);
+                      const n = parseInt(raw, 10);
+                      if (!isNaN(n) && n >= 1) setInput(s => ({ ...s, teamSize: Math.min(500, n) }));
+                    }}
+                    onBlur={() => {
+                      const n = parseInt(teamSizeStr, 10);
+                      const clamped = isNaN(n) || n < 1 ? 1 : Math.min(500, n);
+                      setTeamSizeStr(String(clamped));
+                      setInput(s => ({ ...s, teamSize: clamped }));
+                    }}
+                    className="h-full min-w-0 flex-1 bg-transparent text-center font-mono text-[15px] font-medium text-ink outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setInput(s => ({ ...s, teamSize: Math.min(500, s.teamSize + 1) }))}
+                    className="flex h-full w-11 shrink-0 items-center justify-center text-ink-muted transition hover:bg-surface-2 hover:text-ink active:scale-95"
+                    aria-label="Increase team size"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Role */}
+              <div>
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Role <span className="normal-case tracking-normal font-normal text-ink-faint">(optional)</span></p>
+                <div className="mt-2.5">
+                  <Select
+                    value={input.role ?? ""}
+                    onChange={(v) => setInput(s => ({ ...s, role: (v as Role) || undefined }))}
+                    options={ROLES}
+                    aria-label="Role"
+                  />
+                </div>
               </div>
             </div>
 
