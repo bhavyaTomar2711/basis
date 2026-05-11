@@ -27,19 +27,19 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Basis — The basis for your AI spend",
+  title: "Basis - The basis for your AI spend",
   description:
     "A free 2-minute audit of your team's AI tool spend. See where you're overspending, what to switch to, and how much you'd save in a year.",
   metadataBase: new URL("https://basis.credex.rocks"),
   openGraph: {
-    title: "Basis — The basis for your AI spend",
+    title: "Basis - The basis for your AI spend",
     description:
       "An itemized audit of your team's AI tool spend. Built for Credex.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Basis — The basis for your AI spend",
+    title: "Basis - The basis for your AI spend",
     description:
       "An itemized audit of your team's AI tool spend. Built for Credex.",
   },
@@ -54,6 +54,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable}`}
+      suppressHydrationWarning
     >
       <head>
         {/* Pre-warm the TLS handshake to Supabase — the first DB read on

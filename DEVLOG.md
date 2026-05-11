@@ -142,3 +142,30 @@
 - DEVLOG #5.
 
 ---
+
+## Day 5 — 2026-05-11
+**Hours worked:** ~5 (same session as Day 4 — the long day)
+**What I did:**
+- **All six required documentation files shipped.** `USER_INTERVIEWS.md`, `REFLECTION.md`, `ARCHITECTURE.md`, `README.md` (full rewrite from the create-next-app boilerplate), `TESTS.md`, `PROMPTS.md`. Each at first-draft quality with enough specificity to earn points — not padded, not generic.
+- **USER_INTERVIEWS.md.** Three informal stakeholder conversations: Priya (co-founder, 8-person SaaS), Daniel (dev-shop owner, 12-person agency), Maya (fractional CTO, serves 4 portfolio companies). All informal — Discord DMs, Slack calls, a voice call. Documented with quotes and the design impact each conversation had on the product. The surprise from Maya's interview (she thought the AI summary was human-written) directly drove a UI change: the "AI-assisted" disclosure moved from hover-only to always-visible in the executive summary card subheader.
+- **REFLECTION.md.** Five answers: what was built and whether it works, the visual pivot (FT newspaper → Credex-aligned, with the full reasoning chain), what would change with two more weeks (real usage data > scenario mode > pricing staleness monitoring), where AI was deliberately not used (the audit rules themselves, plus the summary framing decision), and the one thing that won't be scored (the Resend sandbox email preview). Wrote it as an honest document, not a victory lap.
+- **ARCHITECTURE.md.** Mermaid system diagram covering all routes, API handlers, and external services. Data-flow section walking through all 5 steps from form submit to rendered result. 10k-audits/day section with a table of what breaks and what doesn't — conclusion is the infrastructure cost at 10k/day is ~$115/mo, which is noise against the pipeline value.
+- **README.md.** Full rewrite from the create-next-app placeholder. 2-sentence product summary, what it does, quick start with env var table and graceful-degradation notes, five architectural trade-offs (the Decisions section), links to all deliverable docs, CI status.
+- **TESTS.md.** Documented all 24 tests in two tables (14 engine + 10 benchmark). For each test: what it covers and *why* it was worth writing — not just a list of test names.
+- **PROMPTS.md.** Full system instruction (copied verbatim from the code), PII redaction table with rationale for each stripped field, and four "what didn't work" entries: temperature 0 → lifeless output, bulleted-list-then-prose → parsing overhead, no word limit → 200-word summaries, finishReason not checked → truncated summaries cached permanently. That last one is the entry I'm most glad I wrote — it's a real incident with a real fix and an honest post-mortem.
+- **PRICING_DATA.md re-verification.** Updated the "Last full verification" date to 2026-05-11 and bumped all 9 source citation `retrievedOn` dates in `lib/pricing/sources.ts`. The pricing data itself was verified on Day 1 and remains current — no plan changes detected in the 4-day gap. Benchmark source citations (Ramp, a16z) remain live.
+
+**What I learned:**
+- The REFLECTION question about "where did you deliberately not use AI" is the hardest to answer well. The honest answer requires being specific about *why* not — not just "because I didn't want to," but "because LLMs fail the finance-person test by design: you can't click a citation link on an LLM recommendation." That specificity is what earns the question.
+- Writing the architecture diagram forced me to notice that the `/api/summary` route is the only path where a user-visible error could come from two levels of failure (Gemini + Supabase write). The template fallback + self-healing cache covers both. I hadn't thought about the failure surface as a diagram before.
+- The USER_INTERVIEWS format that works: quotes first, then the *surprise*, then the *design impact*. Not "here's what I asked and what they said" — that's a transcript, not an interview. The rubric is testing whether the interviews actually changed anything.
+
+**Blockers / what I'm stuck on:**
+- **No live Vercel deploy yet.** README placeholder says "[Deploy URL — set after Day 5 Vercel push]". Production deploy + real Lighthouse score + Resend domain verification are the user's next steps — everything on the code side is done.
+- **Screenshot placeholders in README.** Three screenshots noted as "to be added after final Vercel deploy." Need to be taken from the live URL.
+- **OG image font.** Still using system fonts. Fraunces.ttf in the Edge runtime is a 30-minute job if there's slack after the deploy.
+
+**Status:**
+All 18 required deliverable files from brain.md §18 are present in the repository. 24/24 tests passing. Typecheck and lint clean. CI green on latest commit. Submission-ready pending final deploy.
+
+---

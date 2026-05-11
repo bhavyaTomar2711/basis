@@ -10,6 +10,7 @@ import {
   OpenAiMark,
   WindsurfMark,
 } from "@/lib/brand-marks";
+import { SiteNav } from "./_components/site-nav";
 
 export default function Home() {
   return (
@@ -27,54 +28,7 @@ export default function Home() {
   );
 }
 
-/* ============================================
-   Nav — Apple/Stripe-style clean toolbar
-   ============================================ */
-function SiteNav() {
-  return (
-    <header className="sticky top-4 z-30 mx-auto w-full max-w-7xl px-4 sm:top-6 sm:px-6">
-      {/* Refined nav: taller for presence, subtle shadow, glass effect. */}
-      <div className="shadow-sm flex h-20 items-center justify-between rounded-full border border-rule/60 bg-surface/50 px-8 backdrop-blur-md backdrop-saturate-100 sm:h-20 sm:px-10">
-        <Link href="/" className="transition hover:opacity-80">
-          <img
-            src="/logo.png"
-            alt="Basis"
-            // Intrinsic 1557×652 → rendered at h-16 (64px). Explicit
-            // dimensions eliminate the LCP element's CLS contribution.
-            width={1557}
-            height={652}
-            className="h-16 w-auto"
-            loading="eager"
-            decoding="sync"
-            fetchPriority="high"
-          />
-        </Link>
-        {/* Middle links — bigger, with subtle background on hover */}
-        <nav className="hidden items-center gap-2 sm:flex">
-          {[
-            { href: "#sample", label: "Sample audit" },
-            { href: "#how", label: "How it works" },
-            { href: "https://credex.rocks", label: "Credex" },
-          ].map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="rounded-lg px-4 py-2 text-[15px] font-medium text-ink-muted transition-all duration-150 hover:bg-surface-2 hover:text-ink"
-            >
-              {l.label}
-            </a>
-          ))}
-        </nav>
-        <Link
-          href="/audit/new"
-          className="inline-flex h-12 items-center justify-center rounded-full bg-cta-bg/90 px-7 text-[15px] font-semibold text-cta-ink shadow-sm backdrop-blur transition hover:-translate-y-px hover:bg-[#1a1a1c] sm:h-12 sm:px-8"
-        >
-          Run audit
-        </Link>
-      </div>
-    </header>
-  );
-}
+
 
 /* ============================================
    Hero — centered (Credex-grammar). Floating logo cards live
@@ -104,16 +58,16 @@ function Hero() {
           </span>
         </Badge>
 
-        <h1 className="mt-7 text-balance text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[0.98] tracking-[-0.025em]">
+        <h1 className="mt-7 text-balance text-[clamp(3.1rem,8vw,5rem)] font-extrabold leading-[0.96] tracking-[-0.03em]">
           <span className="text-green">See what</span>{" "}
           <span className="text-ink">your AI stack</span>{" "}
           <span className="text-ink">actually costs.</span>
         </h1>
 
-        <p className="mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-ink-muted sm:text-xl">
+        <p className="mt-7 max-w-2xl text-pretty text-[1.0625rem] leading-relaxed text-ink-muted sm:text-xl">
           An itemized audit of what your team pays for Cursor, Copilot, Claude,
           ChatGPT and the rest. We surface where you&rsquo;re overspending,
-          what to switch to, and how much you&rsquo;d save in a year &mdash;
+          what to switch to, and how much you&rsquo;d save in a year -
           with the math shown.
         </p>
 
@@ -531,7 +485,7 @@ function WhereTeamsOverspend() {
             <span className="size-1.5 rounded-full bg-green" />
             Audit insights
           </p>
-          <h2 className="mt-5 text-balance text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.025em] sm:text-[3.25rem] xl:text-[3.6rem]">
+          <h2 className="mt-5 text-balance text-[2.75rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-[3.25rem] xl:text-[3.6rem]">
             Where teams{" "}
             <span className="relative inline-block">
               <span className="text-green">quietly</span>
@@ -545,7 +499,7 @@ function WhereTeamsOverspend() {
           </h2>
           <p className="mt-6 max-w-md text-pretty text-[17px] leading-relaxed text-ink-muted sm:text-lg">
             Four patterns we see in nearly every audit. Each one comes
-            with a line item, the math, and a citation &mdash; never
+            with a line item, the math, and a citation - never
             guesswork, never &ldquo;Cursor bad, Claude good.&rdquo;
           </p>
           <div className="mt-9 flex items-center gap-5">
@@ -751,7 +705,7 @@ function HowItWorks() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-faint">
           How it works
         </p>
-        <h2 className="mt-3 text-balance text-[2.25rem] font-extrabold leading-tight tracking-[-0.025em] sm:text-5xl">
+        <h2 className="mt-3 text-balance text-[2.65rem] font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
           Five steps.{" "}
           <span className="text-green">Two minutes.</span>
         </h2>
@@ -962,7 +916,7 @@ function Methodology() {
               <span className="size-1.5 rounded-full bg-green" />
               Methodology
             </p>
-            <h2 className="mt-4 text-balance text-[2.25rem] font-extrabold leading-[1.02] tracking-[-0.025em] sm:text-[3rem] xl:text-[3.4rem]">
+            <h2 className="mt-4 text-balance text-[2.65rem] font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-[3rem] xl:text-[3.4rem]">
               What you can <span className="text-green">verify</span>.
             </h2>
             <p className="mt-5 max-w-xl text-pretty text-[17px] leading-relaxed text-ink-muted sm:text-[18px]">
@@ -1088,7 +1042,7 @@ function Methodology() {
           $8,280<span className="text-ink-faint">/yr</span>
         </p>
         <p className="mx-auto mt-6 max-w-md text-pretty text-[16px] leading-relaxed text-ink-muted sm:text-[17px]">
-          That&apos;s the typical annual savings we surface. Yours could be higher &mdash; or lower. The audit takes two minutes and shows the math, line by line.
+          That&apos;s the typical annual savings we surface. Yours could be higher - or lower. The audit takes two minutes and shows the math, line by line.
         </p>
         <div className="mt-10 flex flex-col items-center gap-5 sm:flex-row sm:justify-center sm:gap-7">
           <Link

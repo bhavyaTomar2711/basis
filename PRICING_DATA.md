@@ -2,8 +2,9 @@
 
 > Source-of-truth pricing data for the Basis audit engine. Every price in `lib/pricing/data.ts` traces back to an entry on this page. All prices in USD unless noted.
 
-**Last full verification:** 2026-05-07 (Day 1)
-**Re-verification scheduled:** 2026-05-13 morning (Day 5, before submission)
+**Last full verification:** 2026-05-11 (Day 5)
+**Previous verification:** 2026-05-07 (Day 1)
+**Next re-verification:** 2026-05-13 morning (before final submission)
 
 ---
 

@@ -113,23 +113,23 @@ export function ResultsContent({
   );
 
   return (
-    <article className="mx-auto max-w-3xl">
+    <article className="mx-auto max-w-4xl">
       {/* document header */}
-      <div className="flex items-baseline justify-between border-b border-rule pb-4">
+      <div className="flex items-baseline justify-between border-b border-rule py-5">
         <div className="flex items-center gap-3">
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-faint">
             AUDIT · #{auditId}
           </span>
           {publicShare ? (
-            <span className="rounded-full bg-bg px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+            <span className="rounded-full bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-ink-muted">
               Shared
             </span>
           ) : persistedAuditId ? (
-            <span className="rounded-full bg-green-tint px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-green-deep">
+            <span className="rounded-full bg-green-tint px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-green-deep">
               Saved
             </span>
           ) : (
-            <span className="rounded-full bg-bg px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+            <span className="rounded-full bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-ink-muted">
               Preview
             </span>
           )}
@@ -144,19 +144,22 @@ export function ResultsContent({
       </div>
 
       {/* hero — savings */}
-      <header className="mt-10 sm:mt-14">
+      <header className="mt-12 sm:mt-16">
         {tier === "high" && (
           <span className="inline-flex items-center gap-2 rounded-full bg-green-tint px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-green-deep">
+            <span className="size-1.5 rounded-full bg-green-deep" />
             High-impact savings
           </span>
         )}
         {tier === "optimal" && (
           <span className="inline-flex items-center gap-2 rounded-full bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+            <span className="size-1.5 rounded-full bg-ink-faint" />
             You&rsquo;re spending well
           </span>
         )}
         {tier === "medium" && (
           <span className="inline-flex items-center gap-2 rounded-full bg-bg px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+            <span className="size-1.5 rounded-full bg-ink-faint" />
             Straightforward savings
           </span>
         )}
@@ -164,17 +167,23 @@ export function ResultsContent({
         <h1 className="mt-4 text-balance">
           <CountUp
             value={result.totalMonthlySavingsUsd}
-            className="font-money text-[clamp(2.75rem,9vw,5.5rem)] font-semibold leading-none tracking-tight text-green-deep"
+            className="font-money text-[clamp(4rem,11vw,5.5rem)] font-semibold leading-none tracking-tight text-green-deep"
           />
-          <span className="ml-3 align-baseline text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+          <span className="ml-3 align-baseline text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             saved / month
           </span>
         </h1>
-        <p className="mt-3 font-mono text-base text-ink-muted">
-          {fmtUsd(result.totalAnnualSavingsUsd)} saved per year ·{" "}
-          {fmtUsd(result.totalCurrentMonthlyUsd)}/mo current →{" "}
-          {fmtUsd(result.totalRecommendedMonthlyUsd)}/mo recommended
-        </p>
+        <div className="mt-4 inline-flex flex-wrap gap-2">
+          <span className="inline-flex items-center rounded-full bg-bg px-3 py-1 font-mono text-[11px] text-ink-muted">
+            {fmtUsd(result.totalAnnualSavingsUsd)}/yr saved
+          </span>
+          <span className="inline-flex items-center rounded-full bg-bg px-3 py-1 font-mono text-[11px] text-ink-muted">
+            {fmtUsd(result.totalCurrentMonthlyUsd)}/mo current
+          </span>
+          <span className="inline-flex items-center rounded-full bg-bg px-3 py-1 font-mono text-[11px] text-ink-muted">
+            {fmtUsd(result.totalRecommendedMonthlyUsd)}/mo recommended
+          </span>
+        </div>
       </header>
 
       {/* executive summary */}
@@ -189,10 +198,13 @@ export function ResultsContent({
 
       {/* findings — receipt rows in a card */}
       <section className="mt-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
           Findings
         </p>
-        <div className="card-shadow mt-3 overflow-hidden rounded-3xl border border-rule bg-surface">
+        <div
+          className="card-shadow mt-3 overflow-hidden rounded-3xl border border-rule bg-surface"
+          style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
+        >
           <ul className="divide-y divide-rule">
             {result.findings.map((f, idx) => (
               <li key={idx}>
@@ -202,11 +214,11 @@ export function ResultsContent({
           </ul>
 
           {/* total row */}
-          <div className="flex items-baseline justify-between bg-green-tint px-6 py-5 sm:px-8">
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-green-deep/80">
+          <div className="flex items-baseline justify-between bg-green-tint px-8 py-6">
+            <span className="font-mono text-sm uppercase tracking-[0.18em] text-green-deep/80">
               Total saved / month
             </span>
-            <span className="font-money text-2xl font-semibold tabular-nums text-green-deep sm:text-3xl">
+            <span className="font-money text-3xl font-semibold tabular-nums text-green-deep">
               {fmtUsd(result.totalMonthlySavingsUsd)}
             </span>
           </div>
@@ -217,7 +229,7 @@ export function ResultsContent({
       {tier === "high" && (
         <section className="mt-12">
           <div className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
               Capture more
             </p>
             <h3 className="mt-3 text-2xl font-bold tracking-tight">
@@ -241,7 +253,7 @@ export function ResultsContent({
       {tier === "optimal" && (
         <section className="mt-12">
           <div className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
               You&rsquo;re spending well
             </p>
             <h3 className="mt-3 text-2xl font-bold tracking-tight">
@@ -257,14 +269,14 @@ export function ResultsContent({
 
       {/* sources */}
       <section className="mt-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
           Sources
         </p>
-        <ol className="mt-3 space-y-2 font-mono text-xs text-ink-muted">
+        <ol className="mt-3 rounded-3xl border border-rule bg-surface p-6 sm:p-8 font-mono text-xs text-ink-muted">
           {sourcesUsed.map((id) => {
             const c = citation(id);
             return (
-              <li key={id} className="flex gap-3">
+              <li key={id} className="flex gap-3 py-2 border-b border-rule last:border-0">
                 <span className="text-ink-faint">[{id}]</span>
                 <span>
                   {c.vendor} · {c.url} · retrieved {c.retrievedOn}
@@ -301,20 +313,20 @@ function FindingRow({ finding }: { finding: ToolFinding }) {
 
   return (
     <div
-      className={`grid grid-cols-1 gap-4 px-6 py-5 sm:grid-cols-[auto_1fr_auto] sm:px-8 sm:py-6 ${
+      className={`grid grid-cols-1 gap-4 px-7 py-6 sm:grid-cols-[auto_1fr_auto] sm:px-8 sm:py-7 ${
         isOverspend ? "" : ""
       }`}
     >
-      <span className="hidden size-10 shrink-0 items-center justify-center rounded-xl bg-bg text-ink sm:inline-flex">
+      <span className="hidden size-12 shrink-0 items-center justify-center rounded-2xl bg-bg text-ink sm:inline-flex">
         <Mark className="size-5" />
       </span>
 
       <div>
-        <p className="text-base font-semibold text-ink">
+        <p className="text-lg font-bold text-ink">
           {tool.label}{" "}
           <span className="font-normal text-ink-muted">· {plan?.name}</span>
         </p>
-        <p className="mt-1 text-sm leading-relaxed text-ink-muted">
+        <p className="mt-1 text-base leading-relaxed text-ink-muted">
           {finding.reason}
         </p>
         <p className="mt-2 font-mono text-xs leading-relaxed text-ink-faint">
@@ -333,7 +345,7 @@ function FindingRow({ finding }: { finding: ToolFinding }) {
             <p className="font-mono text-xs uppercase tracking-wider text-ink-faint">
               Saves
             </p>
-            <p className="mt-1 font-money text-xl font-semibold tabular-nums text-green-deep">
+            <p className="mt-1 font-money text-2xl font-semibold tabular-nums text-green-deep">
               {fmtUsd(finding.monthlySavingsUsd)}
               <span className="font-sans text-xs font-medium text-green-deep/70">
                 /mo
@@ -341,7 +353,7 @@ function FindingRow({ finding }: { finding: ToolFinding }) {
             </p>
           </>
         ) : (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-bg px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-bg px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-ink-muted">
             <span className="size-1.5 rounded-full bg-ink-faint" />
             Keep
           </span>
@@ -410,7 +422,7 @@ function ExecutiveSummary({
   return (
     <section className="mt-12">
       <div className="flex items-baseline justify-between">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
           Executive summary
         </p>
         {generating && (
@@ -419,8 +431,11 @@ function ExecutiveSummary({
           </span>
         )}
       </div>
-      <div className="card-shadow mt-3 rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-        <p className="text-pretty text-lg leading-relaxed text-ink">
+      <div
+        className="card-shadow mt-3 rounded-3xl border border-rule bg-surface p-7 sm:p-9"
+        style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
+      >
+        <p className="text-pretty text-xl leading-relaxed text-ink">
           {summary}
         </p>
       </div>
@@ -489,7 +504,7 @@ function NoInputState() {
 
 function LoadingState() {
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-4xl">
       <div className="h-8 w-40 animate-pulse rounded bg-bg" />
       <div className="mt-8 h-20 w-72 animate-pulse rounded bg-bg" />
       <div className="card-shadow mt-12 rounded-3xl border border-rule bg-surface p-8">
@@ -588,8 +603,11 @@ function LeadCaptureCard({
   if (status === "saved_no_email") {
     return (
       <section className="mt-12">
-        <div className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        <div
+          className="card-shadow rounded-3xl border border-rule bg-surface p-7 sm:p-9"
+          style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
+        >
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
             Email preview
           </p>
           <h3 className="mt-3 text-2xl font-bold tracking-tight">
@@ -607,7 +625,7 @@ function LeadCaptureCard({
           {emailPreview && (
             <div className="mt-6 overflow-hidden rounded-2xl border border-rule">
               <div className="border-b border-rule bg-bg px-4 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
                   Subject
                 </p>
                 <p className="mt-1 text-sm font-medium text-ink">
@@ -620,7 +638,7 @@ function LeadCaptureCard({
 
           {shareUrl && (
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
                 Share link
               </p>
               <code className="mt-2 block truncate rounded-xl border border-rule bg-bg px-3.5 py-2.5 font-mono text-sm text-ink">
@@ -636,8 +654,11 @@ function LeadCaptureCard({
   if (status === "success") {
     return (
       <section className="mt-12">
-        <div className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green-deep">
+        <div
+          className="card-shadow rounded-3xl border border-rule bg-surface p-7 sm:p-9"
+          style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
+        >
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-green-deep">
             Sent
           </p>
           <h3 className="mt-3 text-2xl font-bold tracking-tight">
@@ -657,9 +678,10 @@ function LeadCaptureCard({
     <section className="mt-12">
       <form
         onSubmit={onSubmit}
-        className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8"
+        className="card-shadow rounded-3xl border border-rule bg-surface p-7 sm:p-9"
+        style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
           Get the report
         </p>
         <h3 className="mt-3 text-2xl font-bold tracking-tight">
@@ -686,13 +708,13 @@ function LeadCaptureCard({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="mt-2 block h-11 w-full rounded-xl border border-rule bg-bg px-3.5 text-base text-ink outline-none transition focus:border-green focus:bg-surface"
+              className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
             />
           </div>
           <div>
             <label
               htmlFor="lead-company"
-              className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
+              className="mt-5 block text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
             >
               Company <span className="font-normal normal-case text-ink-faint">(optional)</span>
             </label>
@@ -702,13 +724,13 @@ function LeadCaptureCard({
               autoComplete="organization"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="mt-2 block h-11 w-full rounded-xl border border-rule bg-bg px-3.5 text-base text-ink outline-none transition focus:border-green focus:bg-surface"
+              className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
             />
           </div>
           <div>
             <label
               htmlFor="lead-role"
-              className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
+              className="mt-5 block text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
             >
               Role <span className="font-normal normal-case text-ink-faint">(optional)</span>
             </label>
@@ -716,9 +738,9 @@ function LeadCaptureCard({
               id="lead-role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="mt-2 block h-11 w-full rounded-xl border border-rule bg-bg px-3 text-base text-ink outline-none transition focus:border-green focus:bg-surface"
+              className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
             >
-              <option value="">—</option>
+              <option value="">-</option>
               {ROLE_OPTIONS.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.label}
@@ -729,7 +751,7 @@ function LeadCaptureCard({
           <div>
             <label
               htmlFor="lead-teamsize"
-              className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
+              className="mt-5 block text-xs font-semibold uppercase tracking-[0.14em] text-ink-faint"
             >
               Team size
             </label>
@@ -742,7 +764,7 @@ function LeadCaptureCard({
               onChange={(e) =>
                 setTeamSize(Math.max(1, Number(e.target.value) || 1))
               }
-              className="mt-2 block h-11 w-full rounded-xl border border-rule bg-bg px-3.5 text-base text-ink outline-none transition focus:border-green focus:bg-surface"
+              className="mt-2 block h-12 w-full rounded-xl border border-rule bg-surface px-4 text-base text-ink outline-none"
             />
           </div>
         </div>
@@ -771,7 +793,7 @@ function LeadCaptureCard({
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="inline-flex h-11 items-center justify-center rounded-full bg-cta-bg px-6 text-sm font-medium text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-cta-bg px-7 text-sm font-semibold text-cta-ink transition hover:-translate-y-px hover:bg-[#1a1a1c] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status === "submitting" ? "Sending…" : "Email me the report →"}
           </button>
@@ -833,10 +855,13 @@ function BenchmarkBand({ benchmark }: { benchmark: BenchmarkResult }) {
 
   return (
     <section className="mt-12">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
+      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
         Benchmark
       </p>
-      <div className="card-shadow mt-3 rounded-3xl border border-rule bg-surface p-6 sm:p-8">
+      <div
+        className="card-shadow mt-3 rounded-3xl border border-rule bg-surface p-7 sm:p-9"
+        style={{ borderLeftWidth: "3px", borderLeftColor: "var(--green)" }}
+      >
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <h3 className="text-2xl font-bold tracking-tight">
             {band.label}
@@ -1008,31 +1033,36 @@ function ShareCard({ slug }: { slug: string }) {
 
   return (
     <section className="mt-8">
-      <div className="card-shadow rounded-3xl border border-rule bg-surface p-6 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-faint">
-          Share this audit
-        </p>
-        <h3 className="mt-3 text-2xl font-bold tracking-tight">
-          Public share link.
-        </h3>
-        <p className="mt-2 text-pretty text-base leading-relaxed text-ink-muted">
-          Same report, no email needed to view. Your address is never shown on
-          the share page.
-        </p>
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <code
-            id="share-url-text"
-            className="block min-w-0 flex-1 truncate rounded-xl border border-rule bg-bg px-3.5 py-2.5 font-mono text-sm text-ink"
-          >
-            {href}
-          </code>
-          <button
-            type="button"
-            onClick={onCopy}
-            className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-rule bg-bg px-5 text-sm font-medium text-ink transition hover:border-ink-faint"
-          >
-            {copied ? "Copied!" : "Copy link"}
-          </button>
+      <div
+        className="card-shadow overflow-hidden rounded-3xl border border-rule bg-surface"
+      >
+        <div className="h-[3px] w-full bg-green" />
+        <div className="p-7 sm:p-9">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint">
+            Share this audit
+          </p>
+          <h3 className="mt-3 text-2xl font-bold tracking-tight">
+            Public share link.
+          </h3>
+          <p className="mt-2 text-pretty text-base leading-relaxed text-ink-muted">
+            Same report, no email needed to view. Your address is never shown on
+            the share page.
+          </p>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <code
+              id="share-url-text"
+              className="block min-w-0 flex-1 truncate rounded-2xl border border-rule bg-surface-2/60 px-4 py-3.5 font-mono text-sm text-ink"
+            >
+              {href}
+            </code>
+            <button
+              type="button"
+              onClick={onCopy}
+              className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl border border-rule px-6 font-medium text-ink transition hover:border-ink-faint"
+            >
+              {copied ? "Copied!" : "Copy link"}
+            </button>
+          </div>
         </div>
       </div>
     </section>
